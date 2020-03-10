@@ -17,6 +17,7 @@ Property	                  |	Type   	     |	Default	                      |	Desc
  values (**required**)     | array         | undefined                      | **sorted** array of dates (format:**yyyy-mm-dd**)
  indexClick (**required**) | function      | undefined                      | function that takes the index of the array as argument
  index (**required**)      | number        | undefined                      | the index of the selected date
+ virtual                   | boolean       | false                          | whether to use virtualization to reduce the number of events that are rendered onto the DOM
  getLabel                  | function      | date.toDateString().substring(4) |  A function to calculate the label of the event based on the date of the event
  minEventPadding           | number        | 20                             | The minimum padding between two event labels
  maxEventPadding           | number        | 120                            | The maximum padding between two event labels
