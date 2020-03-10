@@ -11,6 +11,9 @@
     "lint": "./node_modules/.bin/eslint --config tools/lint-config.js src/ demos/demo-swipeable-views/HorizontalTimelineConfigurator.jsx",
     "test": "jest"
   },
+  "precommit": [
+    "build"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/jckdrpr/react-horizontal-timeline"
