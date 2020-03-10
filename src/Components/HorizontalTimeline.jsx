@@ -74,6 +74,7 @@ class HorizontalTimeline extends React.Component {
         width={props.containerWidth}
         height={props.containerHeight}
         events={events}
+        virtualEvents={props.virtual}
         isTouchEnabled={props.isTouchEnabled}
         totalWidth={totalWidth}
         visibleWidth={visibleWidth}
@@ -122,6 +123,8 @@ HorizontalTimeline.propTypes = {
   // --- INTERACTION ---
   isTouchEnabled: PropTypes.bool,
   isKeyboardEnabled: PropTypes.bool,
+  // --- DATA VIEWING ---
+  virtual: PropTypes.bool,
 };
 
 /**
@@ -156,6 +159,8 @@ HorizontalTimeline.defaultProps = {
   // --- INTERACTION ---
   isTouchEnabled: true,
   isKeyboardEnabled: true,
+  // --- DATA VIEWING ---
+  virtual: false,
 };
 
 export default Radium(dimensions({elementResize: true})(HorizontalTimeline));

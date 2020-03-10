@@ -93,6 +93,7 @@ export default class HorizontalTimelineContent extends React.Component {
             values={ this.dates }
             isOpenEnding={state.isOpenEnding}
             isOpenBeginning={state.isOpenBeginning}
+            virtual
           />
         </div>
         <div className='text-center'>

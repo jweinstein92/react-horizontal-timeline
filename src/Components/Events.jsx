@@ -10,7 +10,7 @@ import TimelineDot from './TimelineDot';
  * @param  {object} props The props from parent mainly styles
  * @return {StatelessFunctionalReactComponent} Markup Information for the fader
  */
-const EventsBar = ({ events, selectedIndex, styles, handleDateClick, labelWidth }) => (
+const EventsBar = ({ events, indexOffset = 0, selectedIndex, styles, handleDateClick, labelWidth }) => (
   <ol
     className='events-bar'
     style={{
@@ -22,8 +22,8 @@ const EventsBar = ({ events, selectedIndex, styles, handleDateClick, labelWidth 
         distanceFromOrigin={event.distance}
         label={event.label}
         date={event.date}
-        index={index}
-        key={index}
+        index={index + indexOffset}
+        key={index + indexOffset}
         onClick={handleDateClick}
         selected={selectedIndex}
         styles={styles}
@@ -44,6 +44,8 @@ EventsBar.propTypes = {
     label: PropTypes.string.isRequired,
     date: PropTypes.string.isRequired,
   })).isRequired,
+  // The indexOffset determined by which events are currently rendered
+  indexOffset: PropTypes.number,
   // The index of the selected event
   selectedIndex: PropTypes.number,
   // a handler for clicks on a datapoint

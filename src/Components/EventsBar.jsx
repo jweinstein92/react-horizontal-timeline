@@ -17,6 +17,9 @@ class EventsBar extends React.Component {
     this.state = {
       position: 0,
       maxPosition: Math.min(props.visibleWidth - props.totalWidth, 0),
+      renderedEvents: [],
+      renderedIndex: 0,
+      indexOffset: 0,
     };
 
     this.touch = {
@@ -123,10 +126,38 @@ class EventsBar extends React.Component {
   slideToPosition = (position, props = this.props) => {
       // the width of the timeline component between the two buttons (prev and next)
       const maxPosition = Math.min(props.visibleWidth - props.totalWidth, 0); // NEVER scroll to the right
+      const newPosition = Math.max(Math.min(0, position), maxPosition);
+
+      const renderedEvents = [];
+      let renderedIndex = 0;
+      let startIndex;
+
+      if (props.virtualEvents) {
+        // Update list of rendered events based off of current position
+        // Determine which events are renderable one slide before and one slide
+        // after the current position
+        const lowerBound = Math.max((Math.abs(position) - props.visibleWidth), 0);
+        const upperBound = Math.min((props.visibleWidth * 2) + Math.abs(position), props.totalWidth);
+        const copy = [...props.events];
+
+        copy.forEach((v, k) => {
+          const eventPosition = v.distance - props.labelWidth / 2;
+          if (lowerBound <= eventPosition && upperBound >= eventPosition) {
+            renderedEvents.push(v);
+            if (startIndex == null) startIndex = k;
+          }
+        });
+        // which of the rendered events is selected. If negative or larger than
+        // rendered events list, that means it is not rendered
+        renderedIndex = props.index - startIndex;
+      }
 
       this.setState({
-        position: Math.max(Math.min(0, position), maxPosition),
-        maxPosition
+        position: newPosition,
+        maxPosition,
+        renderedEvents,
+        renderedIndex,
+        indexOffset: startIndex,
       });
   }
 
@@ -165,8 +196,15 @@ class EventsBar extends React.Component {
       }
       : {};
 
-    // filled value = distane from origin to the selected event
-    const filledValue = this.props.events[this.props.index].distance - this.props.barPaddingLeft;
+    // filled value = distance from origin to the selected event
+    // the filled value may be before or after the list of rendered events,
+    // so need to check before using
+    const filledValue = (this.props.virtualEvents
+        && this.state.renderedEvents.length > 0
+        && this.state.renderedIndex > 0
+        && this.state.renderedIndex <= this.state.renderedEvents.length)
+          ? this.state.renderedEvents[this.state.renderedIndex].distance - this.props.barPaddingLeft
+          : this.props.events[this.props.index].distance - this.props.barPaddingLeft;
     const eventLineWidth = this.props.totalWidth - this.props.barPaddingLeft - this.props.barPaddingRight;
 
     return (
@@ -216,8 +254,9 @@ class EventsBar extends React.Component {
                 backgroundColor={this.props.styles.foreground}
               />
               <Events
-                events={this.props.events}
+                events={(!this.props.virtualEvents) ? this.props.events : this.state.renderedEvents}
                 selectedIndex={this.props.index}
+                indexOffset={this.state.indexOffset}
                 styles={this.props.styles}
                 handleDateClick={this.props.indexClick}
                 labelWidth={this.props.labelWidth}
@@ -245,6 +284,7 @@ EventsBar.propTypes = {
     label: PropTypes.string.isRequired,
     date: PropTypes.string.isRequired,
   })).isRequired,
+  virtualEvents: PropTypes.bool.isRequired,
   isTouchEnabled: PropTypes.bool.isRequired,
   totalWidth: PropTypes.number.isRequired,
   visibleWidth: PropTypes.number.isRequired,
